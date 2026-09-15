@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="dashboard-header">
+        <div>
+          <p class="eyebrow">Team workspace</p>
+          <h1>Project Pulse</h1>
+          <p class="dashboard-intro">A clear view of what the team is building, shipping, and watching.</p>
+        </div>
+      </header>
+
+      <section class="dashboard-overview" aria-labelledby="overview-title">
+        <div>
+          <h2 id="overview-title">Project overview</h2>
+          <p id="project-count">Loading projects...</p>
+        </div>
+        <p id="data-message" class="data-message" role="status" aria-live="polite">Loading project updates...</p>
+      </section>
+
+      <section class="dashboard-grid" aria-label="Projects">
+        <div id="project-list" class="project-list">
+          <p class="loading-state">Loading project cards...</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const projectList = document.querySelector("#project-list");
+      const projectCount = document.querySelector("#project-count");
+      const dataMessage = document.querySelector("#data-message");
+
+      function setMessage(message, isError) {
+        dataMessage.textContent = message;
+        dataMessage.classList.toggle("is-error", isError);
+      }
+
+      function text(value, fallback) {
+        return typeof value === "string" && value.trim() ? value.trim() : fallback;
+      }
+
+      function badge(value, className) {
+        const element = document.createElement("span");
+        element.className = className;
+        element.textContent = text(value, "Unknown");
+        return element;
+      }
+
+      function createMetaItem(label, value) {
+        const item = document.createElement("div");
+        item.className = "meta-item";
+
+        const labelElement = document.createElement("dt");
+        labelElement.className = "meta-label";
+        labelElement.textContent = label;
+
+        const valueElement = document.createElement("dd");
+        valueElement.className = "meta-value";
+        valueElement.textContent = text(value, "Not provided");
+
+        item.append(labelElement, valueElement);
+        return item;
+      }
+
+      function createProjectCard(project) {
+        const card = document.createElement("article");
+        card.className = "project-card";
+
+        const header = document.createElement("header");
+        header.className = "project-card-header";
+
+        const title = document.createElement("h3");
+        title.className = "project-name";
+        title.textContent = text(project.name, "Unnamed project");
+
+        const statusRow = document.createElement("div");
+        statusRow.className = "project-status-row";
+        statusRow.append(
+          badge(project.status, "status-badge"),
+          badge(project.priority, "priority-badge")
+        );
+        header.append(title, statusRow);
+
+        const meta = document.createElement("dl");
+        meta.className = "project-meta";
+        meta.append(createMetaItem("Owner", project.owner));
+
+        const summary = document.createElement("p");
+        summary.className = "project-summary";
+        summary.textContent = text(project.summary, "No project summary available.");
+
+        const activity = document.createElement("p");
+        activity.className = "project-activity";
+        activity.textContent = text(project.recentActivity, "No recent activity recorded.");
+
+        card.append(header, meta, summary, activity);
+        return card;
+      }
+
+      async function loadProjects() {
+        try {
+          const response = await fetch("project-data.json");
+          if (!response.ok) {
+            throw new Error(`Project data request failed with status ${response.status}.`);
+          }
+
+          const data = await response.json();
+          if (!data || !Array.isArray(data.projects)) {
+            throw new Error("Project data must contain a projects array.");
+          }
+
+          projectList.replaceChildren();
+          if (data.projects.length === 0) {
+            projectList.innerHTML = '<p class="empty-state">No projects are available yet.</p>';
+            projectCount.textContent = "No active projects";
+            setMessage("Project data loaded, but there are no projects to display.", false);
+            return;
+          }
+
+          data.projects.forEach((project) => {
+            projectList.append(createProjectCard(project));
+          });
+          projectCount.textContent = `${data.projects.length} active project${data.projects.length === 1 ? "" : "s"}`;
+          setMessage("Project updates loaded.", false);
+        } catch (error) {
+          projectList.replaceChildren();
+          const errorState = document.createElement("p");
+          errorState.className = "error-state";
+          errorState.textContent = "Project cards could not be loaded. Check that the dashboard is being served and try again.";
+          projectList.append(errorState);
+          projectCount.textContent = "Project data unavailable";
+          setMessage(error.message, true);
+        }
+      }
+
+      loadProjects();
+    </script>
+  </body>
+</html>

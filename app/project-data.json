@@ -1,0 +1,44 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Onboarding",
+      "owner": "Priya Nair",
+      "status": "In progress",
+      "recentActivity": "Published the first draft of the contributor welcome guide.",
+      "priority": "High",
+      "summary": "Streamline the path from first contribution to confident project ownership."
+    },
+    {
+      "name": "API Reliability",
+      "owner": "Marcus Chen",
+      "status": "At risk",
+      "recentActivity": "Identified a retry storm in staging and scheduled a remediation review.",
+      "priority": "Critical",
+      "summary": "Improve service resilience and make incident recovery more predictable."
+    },
+    {
+      "name": "Design System Refresh",
+      "owner": "Lena Ortiz",
+      "status": "On track",
+      "recentActivity": "Merged the accessible color tokens and started button component updates.",
+      "priority": "Medium",
+      "summary": "Create a consistent, accessible visual foundation for product teams."
+    },
+    {
+      "name": "Quarterly Insights",
+      "owner": "Jordan Williams",
+      "status": "Planning",
+      "recentActivity": "Collected stakeholder questions and shaped the first reporting outline.",
+      "priority": "Low",
+      "summary": "Turn product and team signals into a concise quarterly decision brief."
+    },
+    {
+      "name": "Mobile Workspace",
+      "owner": "Samira Patel",
+      "status": "In review",
+      "recentActivity": "Completed the offline sync test pass for the latest mobile build.",
+      "priority": "High",
+      "summary": "Bring the essential project workflow to contributors on the move."
+    }
+  ]
+}
